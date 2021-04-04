@@ -11,12 +11,12 @@ class CVPRModel(nn.Module):
         # 3 image models
         self.background_image_model = EfficientNet.from_pretrained(image_model, include_top=False)
         self.cropped_image_model = EfficientNet.from_pretrained("efficientnet-b0", include_top=False)
-        self.flow_image_model = EfficientNet.from_pretrained("efficientnet-b0", include_top=False)
+        # self.flow_image_model = EfficientNet.from_pretrained("efficientnet-b0", include_top=False)
         self.pooling = nn.AdaptiveAvgPool2d(1)
         n_features = (
             self.background_image_model._fc.in_features
             + self.cropped_image_model._fc.in_features
-            + self.flow_image_model._fc.in_features
+            # + self.flow_image_model._fc.in_features
         )
         self.image_classifier = nn.Linear(n_features, out_features)
 
@@ -31,12 +31,19 @@ class CVPRModel(nn.Module):
         self.n_hiddens = n_hiddens
         self.text_classifier = nn.Linear(768 * self.n_hiddens, out_features)
 
-    def forward_image(self, background_image, cropped_image, flow_image):
+    def forward_image(self, background_image, cropped_image):
         bs = background_image.size(0)
         background_output = self.background_image_model(background_image)
         cropped_output = self.cropped_image_model(cropped_image)
-        flow_output = self.flow_image_model(flow_image)
-        output = torch.cat([background_output, cropped_output, flow_output], axis=1)
+        # flow_output = self.flow_image_model(flow_image)
+        output = torch.cat(
+            [
+                background_output,
+                cropped_output,
+                # flow_output
+            ],
+            axis=1,
+        )
         output = self.pooling(output).view(bs, -1)
         output = self.image_classifier(output)
         return output
@@ -47,9 +54,10 @@ class CVPRModel(nn.Module):
         output = self.text_classifier(output)
         return output
 
-    def forward(self, background_image, cropped_image, flow_image, ids, mask, token_type_ids):
-        output_image = self.forward_image(background_image, cropped_image, flow_image)
+    # TODO: consider a image model for flow only
+    def forward(self, background_image, cropped_image, ids, mask, token_type_ids):
         output_text = self.forward_text(ids, mask, token_type_ids)
+        output_image = self.forward_image(background_image, cropped_image)
         return output_image, output_text
 
 
@@ -69,5 +77,6 @@ if __name__ == "__main__":
     mask = torch.tensor([0] * 30, dtype=torch.long).view(5, -1)
     token_type_ids = torch.tensor([0] * 30, dtype=torch.long).view(5, -1)
 
-    output_image, output_text = model(image, image, image, ids, mask, token_type_ids)
+    output_image, output_text = model(image, image, ids, mask, token_type_ids)
     print(output_image.shape, output_text.shape)
+    model.forward_image(image, image)

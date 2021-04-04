@@ -2,25 +2,24 @@
 
 
 class CFG:
-    DIM = (512, 512)
+    DIM = (224, 224)
 
     NUM_WORKERS = 4
     BATCH_SIZE = 16
-    EPOCHS = 6
+    EPOCHS = 10
     SEED = 1710
     LR = 3e-4
 
-    TRAIN_IMG = "../input/shopee-product-matching/train_images"
-    VAL_IMG = ""
     DEVICE = "cuda"
 
     MEAN = [0.485, 0.456, 0.406]
     STD = [0.229, 0.224, 0.225]
 
     ################################################# MODEL ####################################################################
-
-    MODEL_NAME = "efficientnet_b0"  # efficientnet_b3 #efficientnetb5 #efficientnetb7
-
+    MAX_LEN = 64
+    MODEL_NAME = "efficientnet-b0"  # efficientnet_b3 #efficientnetb5 #efficientnetb7
+    BERT_MODEL = "roberta-base"
     SCHEDULER = "CosineAnnealingWarmRestarts"  # 'CosineAnnealingLR'
+
     T_0 = 3  # CosineAnnealingWarmRestarts
     min_lr = 1e-6
