@@ -10,7 +10,6 @@ import random
 import cv2
 import torch
 from torch.utils.data import Dataset
-
 from utils import get_logger
 
 

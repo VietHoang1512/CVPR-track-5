@@ -20,9 +20,11 @@ from torch.nn.parallel import DistributedDataParallel
 from torch.optim.lr_scheduler import StepLR
 from torch.utils.data import DataLoader, DistributedSampler
 from tqdm import tqdm
-from vehicle_retrieval_dataset import CityFlowNLDataset, CityFlowNLInferenceDataset
-
 from utils import TqdmToLogger, get_logger
+from vehicle_retrieval_dataset import (
+    CityFlowNLDataset,
+    CityFlowNLInferenceDataset,
+)
 
 torch.multiprocessing.set_sharing_strategy("file_system")
 

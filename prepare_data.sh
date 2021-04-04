@@ -29,4 +29,7 @@
 # wget http://www.aicitychallenge.org/wp-content/uploads/Shuo/2021/track5/vsejnl1/AIC21_Track5_NL_Retrieval.z14
 
 # source 3:
-gdown --id 1ikQYeKiK4d_YxVQRim5Wv11F7ZM9-r34
+# gdown --id 1ikQYeKiK4d_YxVQRim5Wv11F7ZM9-r34
+
+# source 4: smaller version
+gdown --id 1i_8XJPk9N2BukF6y5O05Dnt4WBm7z0gO 
