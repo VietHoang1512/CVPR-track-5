@@ -49,6 +49,8 @@ class CVPRDataset(Dataset):
 
     def __getitem__(self, index):
         sample = self.tracks[self.track_ids[index]]
+        # IMAGE
+
         # TODO: add data path to argument parser
         image_fp = "data/" + sample["frames"][-1]
         cropped_path = image_fp.replace(".jpg", "_croped.jpg")
@@ -67,16 +69,6 @@ class CVPRDataset(Dataset):
             np.array(background_image), [np.array(center_boxes)], isClosed, color, thickness
         )
 
-        if random.uniform(0, 1) > 0.5:
-            label = 1
-            text = random.choice(sample["nl"])
-        else:
-            label = 0
-            rand = 0
-            while index == rand:
-                rand = random.randint(0, len(self.tracks) - 1)
-            text = random.choice(self.tracks[self.track_ids[rand]]["nl"])
-
         if self.dim:
             background_image = cv2.resize(background_image, self.dim)
             cropped_image = cv2.resize(cropped_image, self.dim)
@@ -89,23 +81,49 @@ class CVPRDataset(Dataset):
         cropped_image = cropped_image.astype(np.float32)
         background_image = background_image.transpose(2, 0, 1)
         cropped_image = cropped_image.transpose(2, 0, 1)
-        inputs = self.tokenizer.encode_plus(
-            text,
+
+        # TEXT
+        pos_text = random.choice(sample["nl"])
+        rand = 0
+        while index == rand:
+            rand = random.randint(0, len(self.tracks) - 1)
+
+        neg_text = random.choice(self.tracks[self.track_ids[rand]]["nl"])
+
+        pos_inputs = self.tokenizer.encode_plus(
+            pos_text,
             # add_special_tokens=True,
             max_length=self.max_len,
             padding="max_length",
             return_token_type_ids=True,
             truncation=True,
         )
-        input_ids = inputs["input_ids"]
-        attention_mask = inputs["attention_mask"]
-        token_type_ids = inputs["token_type_ids"]
+        pos_input_ids = pos_inputs["input_ids"]
+        pos_attention_mask = pos_inputs["attention_mask"]
+        pos_token_type_ids = pos_inputs["token_type_ids"]
+
+        neg_inputs = self.tokenizer.encode_plus(
+            neg_text,
+            # add_special_tokens=True,
+            max_length=self.max_len,
+            padding="max_length",
+            return_token_type_ids=True,
+            truncation=True,
+        )
+        neg_input_ids = neg_inputs["input_ids"]
+        neg_attention_mask = neg_inputs["attention_mask"]
+        neg_token_type_ids = neg_inputs["token_type_ids"]
 
         item = {}
-        item["input_ids"] = torch.tensor(input_ids, dtype=torch.long)
-        item["attention_mask"] = torch.tensor(attention_mask, dtype=torch.long)
-        item["token_type_ids"] = torch.tensor(token_type_ids, dtype=torch.long)
+        item["pos_input_ids"] = torch.tensor(pos_input_ids, dtype=torch.long)
+        item["pos_attention_mask"] = torch.tensor(pos_attention_mask, dtype=torch.long)
+        item["pos_token_type_ids"] = torch.tensor(pos_token_type_ids, dtype=torch.long)
+
+        item["neg_input_ids"] = torch.tensor(neg_input_ids, dtype=torch.long)
+        item["neg_attention_mask"] = torch.tensor(neg_attention_mask, dtype=torch.long)
+        item["neg_token_type_ids"] = torch.tensor(neg_token_type_ids, dtype=torch.long)
+
         item["background_image"] = torch.tensor(background_image, dtype=torch.float)
         item["cropped_image"] = torch.tensor(cropped_image, dtype=torch.float)
-        item["label"] = torch.tensor(label, dtype=torch.float)
+
         return item

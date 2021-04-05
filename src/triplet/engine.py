@@ -15,32 +15,40 @@ def train_fn(dataloader, model, criterion, optimizer, device, scheduler):
     pbar = tqdm(dataloader, total=len(dataloader))
     for data in pbar:
 
+        # TODO: Fuck these lists
         background_image = data["background_image"].to(device)
         cropped_image = data["cropped_image"].to(device)
 
-        input_ids = data["input_ids"].to(device)
-        attention_mask = data["attention_mask"].to(device)
-        token_type_ids = data["token_type_ids"].to(device)
-        label = data["label"].to(device)
+        pos_input_ids = data["pos_input_ids"].to(device)
+        pos_attention_mask = data["pos_attention_mask"].to(device)
+        pos_token_type_ids = data["pos_token_type_ids"].to(device)
+
+        neg_input_ids = data["neg_input_ids"].to(device)
+        neg_attention_mask = data["neg_attention_mask"].to(device)
+        neg_token_type_ids = data["neg_token_type_ids"].to(device)
+
         batch_size = background_image.shape[0]
 
         optimizer.zero_grad()
-        output_image, output_text = model(
+        output_image, pos_output_text, neg_output_text = model(
             background_image=background_image,
             cropped_image=cropped_image,
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            token_type_ids=token_type_ids,
+            pos_input_ids=pos_input_ids,
+            pos_attention_mask=pos_attention_mask,
+            pos_token_type_ids=pos_token_type_ids,
+            neg_input_ids=neg_input_ids,
+            neg_attention_mask=neg_attention_mask,
+            neg_token_type_ids=neg_token_type_ids,
         )
 
-        loss = criterion(output_image, output_text, label)
+        loss = criterion(output_image, pos_output_text, neg_output_text)
         loss.backward()
         optimizer.step()
         model.zero_grad()
 
         loss_score.update(loss.detach().item(), batch_size)
 
-        pbar.set_postfix(train_loss=loss_score.avg, lr=optimizer.param_groups[0]["lr"])
+        pbar.set_postfix(train_loss=loss_score.avg, lr=optimizer.param_groups["lr"])
 
     if scheduler is not None:
         scheduler.step()
@@ -54,30 +62,35 @@ def validation_fn(data_loader, model, criterion, device):
     with torch.no_grad():
         pbar = tqdm(data_loader, total=len(data_loader))
         for data in pbar:
-
             background_image = data["background_image"].to(device)
             cropped_image = data["cropped_image"].to(device)
 
-            input_ids = data["input_ids"].to(device)
-            attention_mask = data["attention_mask"].to(device)
-            token_type_ids = data["token_type_ids"].to(device)
-            label = data["label"].to(device)
-            batch_size = background_image.shape[0]
+            pos_input_ids = data["pos_input_ids"].to(device)
+            pos_attention_mask = data["pos_attention_mask"].to(device)
+            pos_token_type_ids = data["pos_token_type_ids"].to(device)
+
+            neg_input_ids = data["neg_input_ids"].to(device)
+            neg_attention_mask = data["neg_attention_mask"].to(device)
+            neg_token_type_ids = data["neg_token_type_ids"].to(device)
 
             batch_size = background_image.shape[0]
-            output_image, output_text = model(
+
+            output_image, pos_output_text, neg_output_text = model(
                 background_image=background_image,
                 cropped_image=cropped_image,
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                token_type_ids=token_type_ids,
+                pos_input_ids=pos_input_ids,
+                pos_attention_mask=pos_attention_mask,
+                pos_token_type_ids=pos_token_type_ids,
+                neg_input_ids=neg_input_ids,
+                neg_attention_mask=neg_attention_mask,
+                neg_token_type_ids=neg_token_type_ids,
             )
-            loss = criterion(output_image, output_text, label)
+
+            loss = criterion(output_image, pos_output_text, neg_output_text)
 
             loss_score.update(loss.detach().item(), batch_size)
 
             pbar.set_postfix(validation_loss=loss_score.avg)
-
     return loss_score.avg
 
 
@@ -140,9 +153,12 @@ def official_evaluate(model, tracks, tokenizer, max_len, dim, augmentation, devi
             output_image, output_text = model(
                 background_image=background_image,
                 cropped_image=cropped_image,
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                token_type_ids=token_type_ids,
+                pos_input_ids=input_ids,
+                pos_attention_mask=attention_mask,
+                pos_token_type_ids=token_type_ids,
+                neg_input_ids=input_ids,
+                neg_attention_mask=attention_mask,
+                neg_token_type_ids=token_type_ids,
             )
             text_embeds.append(output_text.detach().cpu().numpy())
         embedding_queries[query_id] = text_embeds

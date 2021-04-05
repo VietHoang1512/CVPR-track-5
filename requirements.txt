@@ -1,2 +1,8 @@
-timm
-transformers==3.5.0
+numpy
+pandas
+sklearn
+opencv-python
+efficientnet_pytorch
+transformers
+albumentations
+tqdm

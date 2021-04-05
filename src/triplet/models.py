@@ -1,6 +1,7 @@
 """Baseline Siamese model."""
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from efficientnet_pytorch import EfficientNet
 from transformers import AutoConfig, AutoModel
 
@@ -54,31 +55,22 @@ class CVPRModel(nn.Module):
         return output
 
     # TODO: consider a image model for flow only
-    def forward(self, background_image, cropped_image, input_ids, attention_mask, token_type_ids):
-        output_text = self.forward_text(input_ids, attention_mask, token_type_ids)
+    def forward(
+        self,
+        background_image,
+        cropped_image,
+        pos_input_ids,
+        pos_attention_mask,
+        pos_token_type_ids,
+        neg_input_ids,
+        neg_attention_mask,
+        neg_token_type_ids,
+    ):
+        pos_output_text = self.forward_text(pos_input_ids, pos_attention_mask, pos_token_type_ids)
+        neg_output_text = self.forward_text(neg_input_ids, neg_attention_mask, neg_token_type_ids)
         output_image = self.forward_image(background_image, cropped_image)
-        # output_text = F.normalize(output_text, p=2, dim=1)
-        # output_image = F.normalize(output_image, p=2, dim=1)
+        pos_output_text = F.normalize(pos_output_text, p=2, dim=1)
+        neg_output_text = F.normalize(neg_output_text, p=2, dim=1)
+        output_image = F.normalize(output_image, p=2, dim=1)
 
-        return output_image, output_text
-
-
-if __name__ == "__main__":
-    import os
-
-    from src.utils.train_utils import count_parameters
-
-    os.environ["CUDA_VISIBLE_DEVICES"] = "2"
-    model = CVPRModel(image_model="efficientnet-b2", bert_model="roberta-base", n_hiddens=2, out_features=10)
-    # print(model.eval())
-    print("*" * 50)
-    print("Total params:", count_parameters(model))
-    print("*" * 50)
-    image = torch.zeros((5, 3, 512, 512))
-    ids = torch.tensor([0] * 30, dtype=torch.long).view(5, -1)
-    mask = torch.tensor([0] * 30, dtype=torch.long).view(5, -1)
-    token_type_ids = torch.tensor([0] * 30, dtype=torch.long).view(5, -1)
-
-    output_image, output_text = model(image, image, ids, mask, token_type_ids)
-    print(output_image.shape, output_text.shape)
-    model.forward_image(image, image)
+        return output_image, pos_output_text, neg_output_text
