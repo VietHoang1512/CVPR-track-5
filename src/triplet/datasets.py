@@ -1,37 +1,9 @@
 import random
 
-import albumentations
 import cv2
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-
-
-def get_train_transforms(cfg):
-    return albumentations.Compose(
-        [
-            # albumentations.HorizontalFlip(p=0.5),
-            # albumentations.VerticalFlip(p=0.5),
-            # albumentations.Rotate(limit=120, p=0.8),
-            # albumentations.RandomBrightness(limit=(0.09, 0.6), p=0.5),
-            # albumentations.Cutout(num_holes=8, max_h_size=8, max_w_size=8, fill_value=0, always_apply=False, p=0.5),
-            # albumentations.ShiftScaleRotate(
-            #   shift_limit=0.25, scale_limit=0.1, rotate_limit=0
-            # ),
-            albumentations.Normalize(cfg.MEAN, cfg.STD, max_pixel_value=255.0, always_apply=True),
-            # ToTensorV2(p=1.0),
-        ]
-    )
-
-
-def get_valid_transforms(cfg):
-
-    return albumentations.Compose(
-        [
-            albumentations.Normalize(cfg.MEAN, cfg.STD, max_pixel_value=255.0, always_apply=True),
-            # ToTensorV2(p=1.0)
-        ]
-    )
 
 
 class CVPRDataset(Dataset):

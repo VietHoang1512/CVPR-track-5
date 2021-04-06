@@ -6,15 +6,17 @@ from torch.optim.lr_scheduler import CosineAnnealingWarmRestarts
 from transformers import AdamW, AutoTokenizer, get_linear_schedule_with_warmup
 
 from src.configs.configuration import CFG
-from src.constrastive.datasets import (
-    CVPRDataset,
-    get_train_transforms,
-    get_valid_transforms,
-)
-from src.constrastive.engine import official_evaluate, train_fn
+from src.constrastive.datasets import CVPRDataset
+from src.constrastive.engine import train_fn
 from src.constrastive.loss import ContrastiveLoss
 from src.constrastive.models import CVPRModel
-from src.utils.train_utils import EarlyStopping, seed_everything
+from src.utils.train_utils import (
+    EarlyStopping,
+    get_train_transforms,
+    get_valid_transforms,
+    official_evaluate,
+    seed_everything,
+)
 
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"  # see issue #152
 os.environ["CUDA_VISIBLE_DEVICES"] = "2"
@@ -79,6 +81,7 @@ optimizer = AdamW(optimizer_grouped_parameters, lr=CFG.LR, correct_bias=False)
 
 total_steps = len(train_loader) * CFG.EPOCHS
 scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=200, num_training_steps=total_steps)
+
 
 output_dir = os.path.join(CFG.OUTPUT_DIR, "constrastive")
 os.makedirs(output_dir, exist_ok=True)
