@@ -5,7 +5,7 @@ from efficientnet_pytorch import EfficientNet
 from transformers import AutoConfig, AutoModel
 
 
-class CVPRModel(nn.Module):
+class ContrastiveModel(nn.Module):
     def __init__(self, image_model, bert_model, n_hiddens, out_features):
         super().__init__()
         # 3 image models
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     from src.utils.train_utils import count_parameters
 
     os.environ["CUDA_VISIBLE_DEVICES"] = "2"
-    model = CVPRModel(image_model="efficientnet-b2", bert_model="roberta-base", n_hiddens=2, out_features=10)
+    model = ContrastiveModel(image_model="efficientnet-b2", bert_model="roberta-base", n_hiddens=2, out_features=10)
     # print(model.eval())
     print("*" * 50)
     print("Total params:", count_parameters(model))

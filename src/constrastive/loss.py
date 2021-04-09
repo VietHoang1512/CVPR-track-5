@@ -3,12 +3,6 @@ import torch.nn.functional as F
 
 
 class ContrastiveLoss(torch.nn.Module):
-    """
-    Contrastive loss function.
-
-    Based on: http://yann.lecun.com/exdb/publis/pdf/hadsell-chopra-lecun-06.pdf
-    """
-
     def __init__(self, margin=2.0):
         super(ContrastiveLoss, self).__init__()
         self.margin = margin

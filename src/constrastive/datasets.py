@@ -1,13 +1,16 @@
+import os
 import random
 
 import cv2
 import numpy as np
 import torch
 from torch.utils.data import Dataset
+from utils import constants
 
 
-class CVPRDataset(Dataset):
-    def __init__(self, tracks, tokenizer, max_len, dim=(224, 224), augmentation=None):
+class ContrastiveDataset(Dataset):
+    def __init__(self, image_dir, tracks, tokenizer, max_len, dim=(224, 224), augmentation=None):
+        self.image_dir = image_dir
         self.tracks = tracks
         self.track_ids = list(tracks.keys())
         self.tokenizer = tokenizer
@@ -17,12 +20,12 @@ class CVPRDataset(Dataset):
         self.augmentation = augmentation
 
     def __len__(self):
-        return len(self.tracks)
+        return 3 * len(self.tracks)
 
     def __getitem__(self, index):
-        sample = self.tracks[self.track_ids[index]]
+        sample = self.tracks[self.track_ids[index // 3]]
         # TODO: add data path to argument parser
-        image_fp = "data/" + sample["frames"][-1]
+        image_fp = os.path.join(self.image_dir, sample["frames"][-1])
         cropped_path = image_fp.replace(".jpg", "_croped.jpg")
 
         background_image = cv2.imread(image_fp)
@@ -32,22 +35,21 @@ class CVPRDataset(Dataset):
         cropped_image = cv2.cvtColor(cropped_image, cv2.COLOR_BGR2RGB)
 
         center_boxes = [(box[0], box[1]) for box in sample["boxes"]]
-        isClosed = False
-        color = (0, 255, 0)
-        thickness = 2
+
         background_image = cv2.polylines(
-            np.array(background_image), [np.array(center_boxes)], isClosed, color, thickness
+            np.array(background_image),
+            [np.array(center_boxes)],
+            constants.isClosed,
+            constants.color,
+            constants.thickness,
         )
 
         if random.uniform(0, 1) > 0.5:
             label = 1
-            text = random.choice(sample["nl"])
+            text = sample["nl"][index % 3]
         else:
             label = 0
-            rand = 0
-            while index == rand:
-                rand = random.randint(0, len(self.tracks) - 1)
-            text = random.choice(self.tracks[self.track_ids[rand]]["nl"])
+            text = random.choice(sample["neg_nl"])
 
         if self.dim:
             background_image = cv2.resize(background_image, self.dim)

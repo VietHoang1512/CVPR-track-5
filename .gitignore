@@ -2,6 +2,7 @@
 *.ipynb
 *train*.py
 *.bin
+*.json
 
 # data
 data
