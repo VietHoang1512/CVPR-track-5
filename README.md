@@ -1,1 +1,1 @@
-## CVPR 2021: AIC21 Track 5
+## CVPR 2021 Challenge Track 5: Natural Language-Based Vehicle Retrieval

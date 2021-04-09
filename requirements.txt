@@ -7,3 +7,5 @@ transformers
 albumentations
 tqdm
 timm
+textdistance
+git+https://github.com/openai/CLIP.git
