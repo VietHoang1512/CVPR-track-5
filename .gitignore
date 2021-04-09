@@ -1,6 +1,5 @@
 # experiments
 *.ipynb
-*train*.py
 *.bin
 *.json
 

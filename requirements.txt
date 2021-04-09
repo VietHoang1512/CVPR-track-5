@@ -6,3 +6,4 @@ efficientnet_pytorch
 transformers
 albumentations
 tqdm
+timm
