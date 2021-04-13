@@ -26,7 +26,6 @@ from src.utils.train_utils import (
     seed_everything,
 )
 
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 print("Using Torch version:", torch.__version__)
@@ -64,6 +63,7 @@ parser.add_argument(
     type=str,
     help="path to the sample submission",
 )
+
 parser.add_argument(
     "--submission_path",
     type=str,
@@ -130,6 +130,7 @@ parser.add_argument(
     type=int,
     help="embedding dim for both image and text",
 )
+
 parser.add_argument(
     "--patience",
     default=256,

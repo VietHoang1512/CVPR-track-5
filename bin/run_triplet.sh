@@ -1,9 +1,10 @@
 #!/bin/bash
 
 export PYTHONPATH=$PWD
+export CUDA_DEVICE_ORDER=PCI_BUS_ID
 export CUDA_VISIBLE_DEVICES=3
 
-python src/main.py \
+python src/run_triplet.py \
     --train_json data/data/my_train.json \
     --validation_json data/data/my_validation.json \
     --test_tracks data/data/test-tracks_2.json \
