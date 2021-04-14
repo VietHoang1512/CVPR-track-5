@@ -1,6 +1,6 @@
 <div align="center">
 
-# [CVPR 2021 Challenge](https://www.aicitychallenge.org/)
+# [CVPR 2021 Challenge](https://www.aicitychallenge.org/)  <img src="assets/CVPR.png" alt="CVPR 2021" width="35" height="22">
 
 ## Track 5: Natural Language-Based Vehicle Retrieval
 
@@ -13,6 +13,10 @@
 
 - This is the code for the #5 solution
 - The [single model](https://drive.google.com/file/d/1-2-rGO46ZXVS0GTxxx-LlyVe_RU3aumu/view?usp=sharing) achieved 0.1564 MRR in the private leaderboard
+
+<div align="center">
+<img src="assets/leaderboard.png" alt="Track 5 private leader board" width="600" height="350">
+</div>
 
 ## Prerequisites
 
