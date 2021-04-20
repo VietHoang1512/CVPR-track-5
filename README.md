@@ -11,11 +11,11 @@
 
 ## Overview
 
-- This is the code for the #5 solution
-- The [single model](https://drive.google.com/file/d/1-2-rGO46ZXVS0GTxxx-LlyVe_RU3aumu/view?usp=sharing) achieved 0.1564 MRR in the private leaderboard
+- This is the code for the #4 solution
+
 
 <div align="center">
-<img src="assets/leaderboard.png" alt="Track 5 private leader board" width="600" height="350">
+<img src="assets/leaderboard.png" alt="Track 4 private leader board" width="600" height="350">
 </div>
 
 ## Prerequisites
