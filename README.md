@@ -11,7 +11,7 @@
 
 ## Overview
 
-- This is the code for the #4 solution
+- This is the code for the #4 solution [[paper]](https://openaccess.thecvf.com/content/CVPR2021W/AICity/html/Nguyen_Contrastive_Learning_for_Natural_Language-Based_Vehicle_Retrieval_CVPRW_2021_paper.html)
 
 
 <div align="center">
