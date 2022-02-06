@@ -39,3 +39,13 @@ Running `setup.sh` also installs the dependencies
 ## Reproceduring
 
 - Running [run_nce.py](src/run_nce.py) with the default arguments
+## Citation
+```
+@inproceedings{nguyen2021contrastive,
+  title={Contrastive learning for natural language-based vehicle retrieval},
+  author={Nguyen, Tam Minh and Pham, Quang Huu and Doan, Linh Bao and Trinh, Hoang Viet and Nguyen, Viet-Anh and Phan, Viet-Hoang},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={4245--4252},
+  year={2021}
+}
+```
